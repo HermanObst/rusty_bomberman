@@ -1,4 +1,4 @@
-# Bomberman R Game README
+# Bomberman R Game
 
 Welcome to the Bomberman R project, a Rust-based implementation inspired by the classic Bomberman game, where strategy and quick decision-making lead to victory. This version is designed as part of the FIUBA Rust Workshop, focusing on the development of a robust and efficient solution to manage game state transformations based on bomb detonations in a maze-like environment.
 
