@@ -1,18 +1,20 @@
 use crate::errors::MazeError;
 use std::fs::File;
-use std::io::{Read, Split};
+use std::io::Read;
+
+#[derive(PartialEq, Debug)]
 pub enum BombType {
     Normal,
     Penetrating,
 }
-
+#[derive(PartialEq, Debug)]
 pub enum DeviationDirection {
-    Top,
+    Up,
     Down,
     Right,
     Left,
 }
-
+#[derive(PartialEq, Debug)]
 pub enum MazeElement {
     Enemy{health: u8},
     Bomb{reach: u8, kind: BombType},
@@ -23,7 +25,7 @@ pub enum MazeElement {
 }
 
 pub struct Maze {
-    matrix: Vec<Vec<MazeElement>>
+    pub matrix: Vec<Vec<MazeElement>>
 }
 
 impl Maze {
@@ -70,27 +72,36 @@ fn str_to_maze_element(element_str: &str) -> Result<MazeElement, MazeError> {
                     if !c2.is_ascii_digit() {
                         Err(MazeError::InvalidFormat(String::from("Not allowed character found")))
                     } else {
-                        Ok(MazeElement::Bomb {reach: (*c2 as u8), kind: (BombType::Normal)})
+                        Ok(MazeElement::Bomb {reach: (*c2 as u8 - '0' as u8), kind: (BombType::Normal)})
                     }
                 },
                 'S' => {
                     if !c2.is_ascii_digit() {
                         Err(MazeError::InvalidFormat(String::from("Not allowed character found")))
                     } else {
-                        Ok(MazeElement::Bomb {reach: (*c2 as u8), kind: (BombType::Penetrating)})
+                        Ok(MazeElement::Bomb {reach: (*c2 as u8 - '0' as u8), kind: (BombType::Penetrating)})
                     }
                 },
                 'F' => {
                     if !c2.is_ascii_digit() {
                         Err(MazeError::InvalidFormat(String::from("Not allowed character found")))
                     } else {
-                        Ok(MazeElement::Enemy {health:(*c2 as u8)})
+                        Ok(MazeElement::Enemy {health:(*c2 as u8 - '0' as u8)})
                     }
                 },
+                'D' => {
+                    match c2 {
+                        'L' => Ok(MazeElement::Deviate{direction:(DeviationDirection::Left)}),
+                        'R' => Ok(MazeElement::Deviate{direction:(DeviationDirection::Right)}),
+                        'U' => Ok(MazeElement::Deviate{direction:(DeviationDirection::Up)}),
+                        'D' => Ok(MazeElement::Deviate{direction:(DeviationDirection::Down)}),
+                        _ => Err(MazeError::InvalidFormat(String::from("Not allowed character found"))),
+                    }
+                }
                 _ => Err(MazeError::InvalidFormat(String::from("Not allowed character found")))
             }
         },
-        _ => Err(MazeError::InvalidFormat(String::from("Incorrect maze input file")))
+        _ => Err(MazeError::InvalidFormat(String::from("Incorrect maze MazeElement file")))
 
     }
 }
@@ -103,5 +114,78 @@ mod tests {
     fn test_file_reading() {
         let result = read_file("src/input.txt").unwrap();
         assert_eq!(result, "B2 R R _ F1 _ _\n_ W R W _ W _\nB5 _ _ _ B2 _ _\n_ W _ W _ W _\n_ _ _ _ _ _ _\n_ W _ W _ W _\n_ _ _ _ _ _ _");
+    }
+
+    #[test]
+    fn test_maze_build() {
+        let result = read_file("src/input.txt").unwrap();
+        let matrix = process_file(&result).unwrap();
+        let expected_maze = [
+            vec![
+                MazeElement::Bomb {reach:(2), kind:(BombType::Normal)},
+                MazeElement::Rock,
+                MazeElement::Rock,
+                MazeElement::Empty,
+                MazeElement::Enemy {health: (1)},
+                MazeElement::Empty,
+                MazeElement::Empty,
+            ],
+            vec![
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Rock,
+                MazeElement::Wall,
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+            ],
+            vec![
+                MazeElement::Bomb {reach:(5), kind:(BombType::Normal)},
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Bomb {reach:(2), kind:(BombType::Normal)},
+                MazeElement::Empty,
+                MazeElement::Empty,
+            ],
+            vec![
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+            ],
+            vec![
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+            ],
+            vec![
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+                MazeElement::Wall,
+                MazeElement::Empty,
+            ],  
+            vec![
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+                MazeElement::Empty,
+            ],
+        ];
+        assert_eq!(matrix, expected_maze);
+
     }
 }
