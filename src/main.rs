@@ -1,4 +1,7 @@
+use maze_types::Maze;
+
 mod maze_types;
+mod errors;
 fn main() {
-    println!("Hello, world!");
+    Maze::new("src/input.txt");
 }
