@@ -34,6 +34,27 @@ impl Maze {
         let matrix = process_file(&file_string)?;
         Ok(Maze{matrix})
     }
+
+    fn valid_len(&self) -> usize {
+       self.matrix.len() 
+    }
+
+    fn check_index(&self, x: usize, y: usize) -> bool {
+        let max_index = self.valid_len() - 1;
+        x < max_index && y < max_index
+    }
+
+    fn get_maze_element(&self, x: usize, y: usize) -> Option<&MazeElement> {
+        self.matrix.get(y)?.get(x)
+    }
+
+    pub fn detonate_bomb(&self, x: usize, y: usize) -> Result<(), MazeError> {
+        let element = self.get_maze_element(x, y).ok_or(MazeError::NoBomb)?;
+        match element {
+           MazeElement::Bomb {..} => Ok(()),
+           _ => Ok(())
+        }
+    }
 }
 
 // reads a file containing a board and convers it to a String.
