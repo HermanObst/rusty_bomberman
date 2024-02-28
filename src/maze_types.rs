@@ -1,6 +1,7 @@
 use crate::errors::MazeError;
 use std::fs::File;
 use std::io::Read;
+use std::usize;
 
 #[derive(PartialEq, Debug)]
 pub enum BombType {
@@ -43,15 +44,6 @@ impl Maze {
         Ok(Maze{matrix})
     }
 
-    fn valid_len(&self) -> usize {
-       self.matrix.len() 
-    }
-
-    fn check_index(&self, x: usize, y: usize) -> bool {
-        let max_index = self.valid_len() - 1;
-        x < max_index && y < max_index
-    }
-
     fn get_maze_element(&self, x: usize, y: usize) -> Option<&MazeElement> {
         self.matrix.get(y)?.get(x)
     }
@@ -79,12 +71,19 @@ impl Maze {
 
     fn calulate_next_action(&self, x_burst: usize, y_burst: usize, bomb_type: &BombType, direction: FireDirection) -> NextAction {
         let (next_x, next_y) = next_indexes(x_burst, y_burst, direction);
+        let next_action: NextAction = match (next_x, next_y) {
+            (Some(x), Some(y)) => {
+                todo!()
+            },
+            (_,_) => NextAction::Stop
+        };
         let element = self.get_maze_element(next_x, next_y);
 
         todo!();
     }
 }
 
+// Returns next indeces. If some of it is out of bounds, return None
 fn next_indexes(x_burst: usize, y_burst: usize, direction: FireDirection) -> (Option<usize>, Option<usize>) {
     let (next_x, next_y) = match direction {
         FireDirection::Up => (Some(x_burst), y_burst.checked_sub(1)),
