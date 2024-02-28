@@ -36,7 +36,7 @@ pub struct Maze {
     pub matrix: Vec<Vec<MazeElement>>
 }
 
-#[allow(dead_code)]
+#[allow(dead_code, unused)]
 impl Maze {
     pub fn new(path: &str) -> Result<Maze, MazeError> {
         let file_string = read_file(path).map_err(|e| MazeError::FileNotFound(e.to_string()))?;
@@ -70,14 +70,14 @@ impl Maze {
     }
 
     fn calulate_next_action(&self, x_burst: usize, y_burst: usize, bomb_type: &BombType, direction: FireDirection) -> NextAction {
-        let (next_x, next_y) = next_indexes(x_burst, y_burst, direction);
-        let next_action: NextAction = match (next_x, next_y) {
-            (Some(x), Some(y)) => {
+        let (some_next_x, some_next_y) = next_indexes(x_burst, y_burst, direction);
+        let next_action: NextAction = match (some_next_x, some_next_y) {
+            (Some(next_x), Some(next_y)) => {
+                let element = self.get_maze_element(next_x, next_y);
                 todo!()
             },
             (_,_) => NextAction::Stop
         };
-        let element = self.get_maze_element(next_x, next_y);
 
         todo!();
     }
