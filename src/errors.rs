@@ -4,7 +4,8 @@ use std::fmt;
 pub enum MazeError {
     FileNotFound(String),
     InvalidFormat(String),
-    Other(String),
+    NoBomb,
+    OutOfBounds,
 }
 
 impl fmt::Display for MazeError {
@@ -12,7 +13,8 @@ impl fmt::Display for MazeError {
         match *self {
             MazeError::FileNotFound(ref cause) => write!(f, "File not found: {}", cause),
             MazeError::InvalidFormat(ref cause) => write!(f, "Invalid format: {}", cause),
-            MazeError::Other(ref cause) => write!(f, "An error occurred: {}", cause),
+            MazeError::NoBomb => write!(f, "No Bomb found in the given coordinates"),
+            MazeError::OutOfBounds => write!(f, "Coordinates out of bounds"),
         }
     }
 }
